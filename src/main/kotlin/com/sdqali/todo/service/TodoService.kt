@@ -1,6 +1,8 @@
 package com.sdqali.todo.service
 
+import com.sdqali.todo.config.AppConfig
 import org.springframework.stereotype.Service
+import java.util.*
 
 @Service
 class TodoService {
@@ -22,9 +24,15 @@ class TodoService {
         items.clear()
     }
 
+    fun get(id: String): TodoItem? {
+        return items.find { it.id.toString() == id}
+    }
+
 }
 
 data class TodoItem(
+    val id: UUID = UUID.randomUUID(),
     val title: String,
-    val completed: Boolean = false
+    val completed: Boolean = false,
+    val url: String = "${AppConfig.rootUrl}/$id"
 )

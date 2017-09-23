@@ -14,5 +14,12 @@ class TodoServiceTest {
         val item = todoService.addFrom(mapOf("title" to "do something"))
         assertEquals(1, todoService.list().size)
         assertFalse(item!!.completed)
+        assertNotNull(item!!.url)
+    }
+
+    @Test
+    fun canRetrieveItemForId() {
+        val item = todoService.addFrom(mapOf("title" to "do something"))
+        assertEquals(item, todoService.get(item!!.id.toString()))
     }
 }
