@@ -1,6 +1,7 @@
 package com.sdqali.todo.web
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.sdqali.todo.service.TodoItem
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -62,7 +63,22 @@ class TodoControllerTest {
         mvc.perform(get("/")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
-            .andExpect(content().bytes(objectMapper.writeValueAsBytes(emptyArray<String>())))
+            .andExpect(content().string(objectMapper.writeValueAsString(emptyArray<TodoItem>())))
+
+    }
+
+    @Test
+    fun addsAnItemToList() {
+        mvc.perform(post("/")
+            .content(objectMapper.writeValueAsBytes(mapOf("title" to "do something")))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk)
+
+        val expectedItems = arrayListOf(TodoItem(title = "do something", completed = false))
+        mvc.perform(get("/")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(content().string(objectMapper.writeValueAsString(expectedItems)))
 
     }
 }
