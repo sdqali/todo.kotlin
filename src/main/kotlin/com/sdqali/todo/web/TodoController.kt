@@ -26,10 +26,11 @@ class TodoController() {
     }
 
     @PostMapping("/")
-    fun create(@RequestBody input: Map<String, String>): TodoItem? {
-        return todoService.addFrom(input)?.let {
-            return it
+    fun create(@RequestBody input: Map<String, String>): ResponseEntity<TodoItem> {
+        todoService.addFrom(input)?.let {
+            return ResponseEntity(it, HttpStatus.ACCEPTED)
         }
+        return ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
     }
 
     @DeleteMapping("/")

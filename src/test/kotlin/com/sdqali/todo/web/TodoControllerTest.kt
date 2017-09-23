@@ -49,7 +49,15 @@ class TodoControllerTest {
         mvc.perform(post("/")
             .content(objectMapper.writeValueAsBytes(mapOf("title" to "do something")))
             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk)
+            .andExpect(status().isAccepted)
+    }
+
+    @Test
+    fun cantCreateItemWithoutTitle() {
+        mvc.perform(post("/")
+            .content(objectMapper.writeValueAsBytes(mapOf("invalid-param" to "do something")))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotAcceptable)
     }
 
     @Test
