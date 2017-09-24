@@ -85,7 +85,7 @@ class TodoControllerTest {
         mvc.perform(post("/")
             .content(objectMapper.writeValueAsBytes(mapOf("title" to "do something")))
             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk)
+            .andExpect(status().isAccepted)
 
         val mvcResult = mvc.perform(get("/")
             .contentType(MediaType.APPLICATION_JSON))
@@ -102,7 +102,7 @@ class TodoControllerTest {
         val mvcResult = mvc.perform(post("/")
             .content(objectMapper.writeValueAsBytes(mapOf("title" to "do something")))
             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk)
+            .andExpect(status().isAccepted)
             .andReturn()
         val item : Map<String, String> = objectMapper.readValue(mvcResult.response.contentAsByteArray, object : TypeReference<Map<String, String>>() {})
 
@@ -116,5 +116,37 @@ class TodoControllerTest {
         mvc.perform(get("/non-existent-id")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun canPatchTitle() {
+        var mvcResult = mvc.perform(post("/")
+            .content(objectMapper.writeValueAsBytes(mapOf("title" to "do something")))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andReturn()
+        var item : Map<String, String> = objectMapper.readValue(mvcResult.response.contentAsByteArray, object : TypeReference<Map<String, String>>() {})
+
+        mvcResult = mvc.perform(patch(item["url"]).content(objectMapper.writeValueAsBytes(mapOf("title" to "do something else")))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andReturn()
+        item = objectMapper.readValue(mvcResult.response.contentAsByteArray, object : TypeReference<Map<String, String>>() {})
+        assertEquals("do something else", item["title"])
+    }
+
+    @Test
+    fun canPatchStatus() {
+        var mvcResult = mvc.perform(post("/")
+            .content(objectMapper.writeValueAsBytes(mapOf("title" to "do something")))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andReturn()
+        var item : Map<String, String> = objectMapper.readValue(mvcResult.response.contentAsByteArray, object : TypeReference<Map<String, String>>() {})
+
+        mvcResult = mvc.perform(patch(item["url"]).content(objectMapper.writeValueAsBytes(mapOf("completed" to "true")))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andReturn()
+        item = objectMapper.readValue(mvcResult.response.contentAsByteArray, object : TypeReference<Map<String, String>>() {})
+        assertEquals("true", item["completed"])
     }
 }

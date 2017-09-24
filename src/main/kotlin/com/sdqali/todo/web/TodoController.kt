@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RestController
 class TodoController() {
@@ -36,5 +37,13 @@ class TodoController() {
     @DeleteMapping("/")
     fun clear() {
         return todoService.clear()
+    }
+
+    @PatchMapping("/{id}")
+    fun patch(@PathVariable id: UUID, @RequestBody input: Map<String, String>): ResponseEntity<TodoItem> {
+        todoService.patch(id, input)?.let {
+            return ResponseEntity(it, HttpStatus.OK)
+        }
+        return ResponseEntity(HttpStatus.NOT_FOUND)
     }
 }

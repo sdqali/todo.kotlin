@@ -28,11 +28,20 @@ class TodoService {
         return items.find { it.id.toString() == id}
     }
 
+    fun patch(id: UUID, input: Map<String, String>): TodoItem? {
+        items.find { it.id == id}?.let { item ->
+            input["title"]?.let { item.title = it}
+            input["completed"]?.let { item.completed = it.toBoolean()}
+            return item
+        }
+        return null
+    }
+
 }
 
 data class TodoItem(
     val id: UUID = UUID.randomUUID(),
-    val title: String,
-    val completed: Boolean = false,
+    var title: String,
+    var completed: Boolean = false,
     val url: String = "${AppConfig.rootUrl}/$id"
 )
