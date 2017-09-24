@@ -172,6 +172,13 @@ class TodoControllerTest {
             .andExpect(status().isNotFound)
     }
 
+    @Test
+    fun cantDeleteNonExistentItem() {
+        mvc.perform(delete("/${UUID.randomUUID()}")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound)
+    }
+
     private fun createItem(): MvcResult {
         return mvc.perform(post("/")
             .content(objectMapper.writeValueAsBytes(mapOf("title" to "do something")))

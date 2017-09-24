@@ -48,7 +48,10 @@ class TodoController() {
     }
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: UUID) {
-        return todoService.delete(id)
+    fun delete(@PathVariable id: UUID): ResponseEntity<TodoItem> {
+        if(todoService.delete(id)) {
+            return ResponseEntity(HttpStatus.OK)
+        }
+        return ResponseEntity(HttpStatus.NOT_FOUND)
     }
 }

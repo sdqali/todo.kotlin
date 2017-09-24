@@ -39,8 +39,8 @@ class TodoService {
         return null
     }
 
-    fun delete(id: UUID) {
-        items.removeIf { it.id == id }
+    fun delete(id: UUID): Boolean {
+        return items.removeIf { it.id == id }
     }
 
 }
