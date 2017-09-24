@@ -84,7 +84,7 @@ class TodoControllerTest {
     @Test
     fun addsAnItemToList() {
         mvc.perform(post("/")
-            .content(objectMapper.writeValueAsBytes(mapOf("title" to "do something")))
+            .content(objectMapper.writeValueAsBytes(mapOf("title" to "do something", "order" to 1)))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isAccepted)
 
@@ -95,6 +95,7 @@ class TodoControllerTest {
         val items : List<Map<String, String>> = objectMapper.readValue(mvcResult.response.contentAsByteArray, object : TypeReference<List<Map<String, String>>>() {})
         assertEquals(1, items.size)
         assertEquals("do something", items[0]["title"])
+        assertEquals("1", items[0]["order"])
         assertNotNull(items[0]["url"])
     }
 
@@ -143,6 +144,19 @@ class TodoControllerTest {
             .andReturn()
         item = objectMapper.readValue(mvcResult.response.contentAsByteArray, object : TypeReference<Map<String, String>>() {})
         assertEquals("true", item["completed"])
+    }
+
+    @Test
+    fun canPatchOrder() {
+        var mvcResult = createItem()
+        var item : Map<String, String> = objectMapper.readValue(mvcResult.response.contentAsByteArray, object : TypeReference<Map<String, String>>() {})
+
+        mvcResult = mvc.perform(patch(item["url"]).content(objectMapper.writeValueAsBytes(mapOf("order" to 4)))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andReturn()
+        item = objectMapper.readValue(mvcResult.response.contentAsByteArray, object : TypeReference<Map<String, String>>() {})
+        assertEquals("4", item["order"])
     }
 
     @Test
