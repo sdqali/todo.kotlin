@@ -19,7 +19,7 @@ class TodoController() {
     }
 
     @GetMapping("/{id}")
-    fun get(@PathVariable("id") id: String): ResponseEntity<TodoItem> {
+    fun get(@PathVariable("id") id: UUID): ResponseEntity<TodoItem> {
         todoService.get(id)?.let {
             return ResponseEntity(it, HttpStatus.OK)
         }
@@ -45,5 +45,10 @@ class TodoController() {
             return ResponseEntity(it, HttpStatus.OK)
         }
         return ResponseEntity(HttpStatus.NOT_FOUND)
+    }
+
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable id: UUID) {
+        return todoService.delete(id)
     }
 }

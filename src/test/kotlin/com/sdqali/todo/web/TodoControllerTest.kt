@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.MvcResult
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -113,17 +114,14 @@ class TodoControllerTest {
 
     @Test
     fun returns404ForNonExistentItem() {
-        mvc.perform(get("/non-existent-id")
+        mvc.perform(get("/${UUID.randomUUID()}")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound)
     }
 
     @Test
     fun canPatchTitle() {
-        var mvcResult = mvc.perform(post("/")
-            .content(objectMapper.writeValueAsBytes(mapOf("title" to "do something")))
-            .contentType(MediaType.APPLICATION_JSON))
-            .andReturn()
+        var mvcResult = createItem()
         var item : Map<String, String> = objectMapper.readValue(mvcResult.response.contentAsByteArray, object : TypeReference<Map<String, String>>() {})
 
         mvcResult = mvc.perform(patch(item["url"]).content(objectMapper.writeValueAsBytes(mapOf("title" to "do something else")))
@@ -136,10 +134,7 @@ class TodoControllerTest {
 
     @Test
     fun canPatchStatus() {
-        var mvcResult = mvc.perform(post("/")
-            .content(objectMapper.writeValueAsBytes(mapOf("title" to "do something")))
-            .contentType(MediaType.APPLICATION_JSON))
-            .andReturn()
+        var mvcResult = createItem()
         var item : Map<String, String> = objectMapper.readValue(mvcResult.response.contentAsByteArray, object : TypeReference<Map<String, String>>() {})
 
         mvcResult = mvc.perform(patch(item["url"]).content(objectMapper.writeValueAsBytes(mapOf("completed" to "true")))
@@ -148,5 +143,25 @@ class TodoControllerTest {
             .andReturn()
         item = objectMapper.readValue(mvcResult.response.contentAsByteArray, object : TypeReference<Map<String, String>>() {})
         assertEquals("true", item["completed"])
+    }
+
+    @Test
+    fun canDelete() {
+        var mvcResult = createItem()
+        var item : Map<String, String> = objectMapper.readValue(mvcResult.response.contentAsByteArray, object : TypeReference<Map<String, String>>() {})
+
+        mvc.perform(delete(item["url"])
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk)
+        mvc.perform(get(item["url"])
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound)
+    }
+
+    private fun createItem(): MvcResult {
+        return mvc.perform(post("/")
+            .content(objectMapper.writeValueAsBytes(mapOf("title" to "do something")))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andReturn()
     }
 }

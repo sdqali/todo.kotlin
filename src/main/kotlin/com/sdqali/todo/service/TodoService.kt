@@ -24,8 +24,8 @@ class TodoService {
         items.clear()
     }
 
-    fun get(id: String): TodoItem? {
-        return items.find { it.id.toString() == id}
+    fun get(id: UUID): TodoItem? {
+        return items.find { it.id == id}
     }
 
     fun patch(id: UUID, input: Map<String, String>): TodoItem? {
@@ -35,6 +35,10 @@ class TodoService {
             return item
         }
         return null
+    }
+
+    fun delete(id: UUID) {
+        items.removeIf { it.id == id }
     }
 
 }

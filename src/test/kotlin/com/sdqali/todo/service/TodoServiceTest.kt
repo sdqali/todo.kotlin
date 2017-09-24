@@ -26,7 +26,7 @@ class TodoServiceTest {
     @Test
     fun canRetrieveItemForId() {
         val item = todoService.addFrom(mapOf("title" to "do something"))
-        assertEquals(item, todoService.get(item!!.id.toString()))
+        assertEquals(item, todoService.get(item!!.id))
     }
 
     @Test
@@ -35,5 +35,12 @@ class TodoServiceTest {
         todoService.patch(item!!.id, mapOf("title" to "something else", "completed" to "true"))
         assertEquals("something else", item.title)
         assertTrue(item.completed)
+    }
+
+    @Test
+    fun canDelete() {
+        val item = todoService.addFrom(mapOf("title" to "do something"))
+        todoService.delete(item!!.id)
+        assertNull(todoService.get(item!!.id))
     }
 }
