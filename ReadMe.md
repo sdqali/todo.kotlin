@@ -1,5 +1,7 @@
 # Todo-Backend
 
+[![Build Status](https://travis-ci.org/sdqali/todo.kotlin.svg?branch=master)](https://travis-ci.org/sdqali/todo.kotlin)
+
 Example implementation for [Todo-Backend](http://www.todobackend.com/) in Kotlin using SpringBoot.
 
 ## Usage
